@@ -1,10 +1,15 @@
-// Viewed at http://localhost:3000
+// Viewed at heroku deployed website
 let express = require("express")
 let mongodb = require("mongodb")
 let sanitizeHTML = require("sanitize-html")
 
 let app = express()
 let db
+
+let port = process.env.PORT
+if (port == null || port == "") {
+    port = 3000
+}
 
 //Loading browser.js
 app.use(express.static("public"))
@@ -13,7 +18,7 @@ app.use(express.static("public"))
 let connectionString = "mongodb+srv://aditya:qwerty123@cluster0-zutjj.mongodb.net/TodoApp?retryWrites=true&w=majority"
 mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true }, function(err, client) {
     db = client.db()
-    app.listen(3000)
+    app.listen(port)
 })
 
 //Automatically take asynchronous requests
