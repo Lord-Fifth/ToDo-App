@@ -5,9 +5,14 @@ function itemTemplate(item) {
         <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
         <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
     </div>
-    </li>
-    `
+    </li>`
 }
+
+//Initial Page Load Render
+let ourHTML = items.map(function(item) {
+    return itemTemplate(item)
+}).join("")
+document.getElementById("item-list").insertAdjacentHTML("beforeend", ourHTML)
 
 //Create feature
 

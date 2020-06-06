@@ -24,9 +24,9 @@ app.use(express.urlencoded({ extended: false }))
 //Read Homepage
 app.get("/", function(req, res) {
 
-            //Reading items from MongoDB collection
-            db.collection("items").find().toArray(function(err, items) {
-                        res.send(`        
+    //Reading items from MongoDB collection
+    db.collection("items").find().toArray(function(err, items) {
+        res.send(`        
                     <!DOCTYPE html>
                     <html>
 
@@ -51,19 +51,15 @@ app.get("/", function(req, res) {
                             </div>
 
                             <ul id="item-list" class="list-group pb-5">
-                                ${items.map(function(item) {
-                                    return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                                    <span class="item-text">${item.text}</span>
-                                    <div>
-                                        <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
-                                        <button data-id="${item._id}" class="delete-me btn btn-danger btn-sm">Delete</button>
-                                    </div>
-                                </li>`
-                                }).join("")}
+                            
                             </ul>
 
                         </div>
-            
+                                
+                        <script>
+                                let items = ${JSON.stringify(items)}
+                        </script>
+
                         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
                         <script src="/browser.js"></script>
                     </body>
@@ -84,7 +80,7 @@ app.post("/create-item", function(req, res) {
 app.post("/update-item", function(req, res) {
 
     //Send updated data to MongoDB collection
-    db.collection("items").findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function() {
+    db.collection("items").findOneAndUpdate({ _id: new mongodb.ObjectId(req.body.id) }, { $set: { text: req.body.text } }, function() {
         res.send("Success")
     })
 })
@@ -93,7 +89,7 @@ app.post("/update-item", function(req, res) {
 app.post("/delete-item", function(req, res) {
 
     //Delete data in MongoDB collection
-    db.collection("items").deleteOne({_id: new mongodb.ObjectId(req.body.id)}, function() {
+    db.collection("items").deleteOne({ _id: new mongodb.ObjectId(req.body.id) }, function() {
         res.send("Success")
     })
 })
