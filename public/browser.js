@@ -1,6 +1,6 @@
-//Updating items in todo list
+//ToDo list buttons
 document.addEventListener("click", function(e) {
-    //Run if Edit button is clicked
+    //Update feature
     if (e.target.classList.contains("edit-me")) {
 
         //Send prompt with pre-populated fields
@@ -12,6 +12,22 @@ document.addEventListener("click", function(e) {
 
                 //Update User Interface with new data
                 e.target.parentElement.parentElement.querySelector(".item-text").innerHTML = userInput
+            }).catch(function() {
+                console.log("Please try again later.")
+            })
+        }
+    }
+
+    //Delete feature
+    if (e.target.classList.contains("delete-me")) {
+
+        //Confirm prompt
+        if (confirm("Do you really want to delete this item permanently?")) {
+            //Send delete confirmation to Node server using axios promise
+            axios.post("/delete-item", { id: e.target.getAttribute("data-id") }).then(function() {
+
+                //Update User Interface by deleting item
+                e.target.parentElement.parentElement.remove()
             }).catch(function() {
                 console.log("Please try again later.")
             })
