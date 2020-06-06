@@ -1,6 +1,7 @@
 // Viewed at http://localhost:3000
 let express = require("express")
 let mongodb = require("mongodb")
+let sanitizeHTML = require("sanitize-html")
 
 let app = express()
 let db
@@ -20,6 +21,19 @@ app.use(express.json())
 
 //Automatically take form data
 app.use(express.urlencoded({ extended: false }))
+
+//Password protection
+function passwordProtected(req, res, next) {
+    res.set("WWW-Authenticate", "Basic realm='Simple Todo App'")
+    console.log(req.headers.authorization)
+    if (req.headers.authorization == "Basic YWRpdHlhOnF3ZXJ0eTEyMw==") {
+        next()
+    } else {
+        res.status(401).send("Authentication required")
+    }
+}
+
+app.use(passwordProtected)
 
 //Read Homepage
 app.get("/", function(req, res) {
@@ -71,7 +85,11 @@ app.get("/", function(req, res) {
 
 //Creating items in the MongoDB collection
 app.post("/create-item", function(req, res) {
-    db.collection("items").insertOne({ text: req.body.text }, function(err, info) {
+
+    //Protect website
+    let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} })
+
+    db.collection("items").insertOne({ text: safeText }, function(err, info) {
         res.json(info.ops[0])
     })
 })
@@ -79,8 +97,11 @@ app.post("/create-item", function(req, res) {
 //Updating items in the MongoDB collection
 app.post("/update-item", function(req, res) {
 
+    //Protect website
+    let safeText = sanitizeHTML(req.body.text, { allowedTags: [], allowedAttributes: {} })
+
     //Send updated data to MongoDB collection
-    db.collection("items").findOneAndUpdate({ _id: new mongodb.ObjectId(req.body.id) }, { $set: { text: req.body.text } }, function() {
+    db.collection("items").findOneAndUpdate({ _id: new mongodb.ObjectId(req.body.id) }, { $set: { text: safeText } }, function() {
         res.send("Success")
     })
 })
